@@ -3,11 +3,11 @@
 
 #include <stdbool.h>
 
-typedef struct {
+typedef struct Penguin {
   unsigned int x;
   unsigned int y;
 } Penguin;
 
 bool penguin_is_valid(Penguin *penguin);
 
-#endif // _penguin_H
+#endif // _PENGUIN_H

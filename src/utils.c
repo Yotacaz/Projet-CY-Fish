@@ -32,7 +32,7 @@ char *scan_str(int max_len, char *msg) {
     // buf should either have a usefull len of max_len or less or its last char
     // should be \n
     if (too_long) {
-      printf(RED "Erreur : nombre de characteres maximal atteint\n" RESET);
+      printf(BOLD_RED "Erreur : nombre de characteres maximal atteint\n" RESET);
       int c;
       while (((c = getchar()) != '\n') && c != EOF) { // clear buffer
       }
@@ -65,10 +65,10 @@ int scan_int(char *msg) {
     printf("%s : ", msg);
     isOk = scanf("%d", &n);
     if (isOk != 1) {
-      printf(RED "echec du scanf, entrez un entier positif.\n" RESET);
+      printf(BOLD_RED "echec du scanf, entrez un entier positif.\n" RESET);
     }
     if (n < 0) {
-      printf(RED "entrez une valeure positive\n" RESET);
+      printf(BOLD_RED "entrez une valeure positive\n" RESET);
       isOk = 0;
     }
     while (getchar() != '\n') {
@@ -93,10 +93,10 @@ int val_between(int min, int max, char *msg) {
     printf("%s (valeur entre %d et %d): ", msg, min, max);
     isOk = scanf("%d", &n);
     if (isOk != 1) {
-      printf(RED "echec du scanf\n" RESET);
+      printf(BOLD_RED "echec du scanf\n" RESET);
     }
     if (n < min || n > max) {
-      printf(RED "entrez une valeure comprise entre %d et %d\n" RESET, min,
+      printf(BOLD_RED "entrez une valeure comprise entre %d et %d\n" RESET, min,
              max);
       isOk = 0;
     }
@@ -104,6 +104,16 @@ int val_between(int min, int max, char *msg) {
     }
   } while (isOk != 1);
   return n;
+}
+
+void print_at_xy(unsigned int x, unsigned int y, const char *format, ...) {
+  assert(x < MAX_SCREEN_WID);
+  gotoxy(x, y);
+  // format code found on internet  gotoxy(x, y);
+  va_list args;
+  va_start(args, format);
+  vprintf(format, args);
+  va_end(args);
 }
 
 /**
@@ -114,7 +124,25 @@ int val_between(int min, int max, char *msg) {
  */
 void verify(int condition, char *err_msg) {
   if (condition == 0) {
-    printf(RED "%s\n" RESET, err_msg);
+    printf(BOLD_RED "%s\n" RESET, err_msg);
     exit(EXIT_FAILURE);
+  }
+}
+
+/**
+ * @brief mix up the tab in param
+ * @param tab the tab to shuffle
+ * @param size the size of the tab
+ */
+void shuffle_tab(int *tab, size_t size) {
+  assert(size > 0 && tab != NULL);
+  int rand_index = 0;
+  verify(tab != NULL, "erreur d'allocation memoire dans ini_penguin");
+
+  for (int i = size - 1; i >= 0; i--) {
+    rand_index = rand() % (i + 1);
+    int tmp = tab[i];
+    tab[i] = tab[rand_index];
+    tab[rand_index] = tmp;
   }
 }
