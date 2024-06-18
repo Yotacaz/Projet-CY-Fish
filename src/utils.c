@@ -68,7 +68,7 @@ int scan_int(char *msg) {
     if (isOk != 1) {
       printf(BOLD_RED "echec du scanf, entrez un entier positif.\n" RESET);
     }
-    if (n < 0) {
+    if (n <= 0) {
       printf(BOLD_RED "entrez une valeure positive\n" RESET);
       isOk = 0;
     }
