@@ -1,7 +1,8 @@
 Game CY-Fish :
 To start you need to
-1. execute the Makefile
-2. execute main file
+1. download this folder
+2. execute the Makefile
+3. execute main file
 
 
 Bonus functionnalities :
