@@ -1,12 +1,14 @@
+Game CY-Fish :
+To start you need to
 1. execute the Makefile
 2. execute main file
 
-Image parser :
-print an bmp file to console with print_img(char * path);
 
-Functionnalities :
+Bonus functionnalities :
+-Image parser :
+print an bmp file to console with print_img(char * path);
 size of map is changeable with const variables
 
-print an image
-changeable nb of player
-==>print final result
+-good overflow protection
+
+-changeable params
