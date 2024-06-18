@@ -15,41 +15,43 @@
 char *scan_str(int max_len, char *msg) {
   assert(max_len > 1);
   assert(msg != NULL);
-  char *buf = malloc((max_len + 2) * sizeof(char));
+  char *buf = calloc((max_len + 3), sizeof(char));
   // we want an extra two char, one for reading an extra char from stdin to
   // ensure the texte isn't too long, the other for the \0
   verify(buf != NULL, "erreur d'allocation memoire");
+  buf[max_len + 2] = '\0';
+
   bool too_long = 1; // to check if everything was sucessfully scaned
 
   do {
     printf("%s (maximum %d characteres) : ", msg, max_len);
 
-    if (fgets(buf, max_len + 2, stdin) == NULL) { // read max_len + 1 char
+    if (fgets(buf, max_len + 3, stdin) ==
+        NULL) { // read max_len + 1 char + \n + \0
+      free(buf);
       exit(EXIT_FAILURE);
     }
-
-    too_long = (strlen(buf) == max_len + 1 && buf[max_len] != '\n');
-    // buf should either have a usefull len of max_len or less or its last char
-    // should be \n
-    if (too_long) {
-      printf(BOLD_RED "Erreur : nombre de characteres maximal atteint\n" RESET);
+    size_t len = strlen(buf);
+    if (len > 0 && buf[len - 1] == '\n') {
+      buf[len - 1] = '\0'; // Remove the newline character
+      too_long = false;
+    } else if (len == max_len + 2) {
+      too_long = true; // Input is too long
+      printf(RED "Erreur : nombre de characteres maximal atteint\n" RESET);
       int c;
-      while (((c = getchar()) != '\n') && c != EOF) { // clear buffer
+      while ((c = getchar()) != '\n' && c != EOF) {
+        // Clear the remaining characters in the input buffer
       }
+    } else {
+      too_long = false;
     }
+
   } while (too_long);
-  // removing \n from the end of the string
-  int i = 0;
-  while (buf[i] != '\n' && buf[i] != '\0') {
-    i++;
-  }
-  if (buf[i] == '\n') {
-    buf[i] = '\0';
-  }
+
   char *str = malloc((strlen(buf) + 1) * sizeof(char));
   verify(str != NULL, "erreur d'allocation memoire");
-  assert(strcpy(str, buf) != NULL); // copy bufer to destination
-  free(buf);
+  strcpy(str, buf); // Copy buffer to destination
+  printf("name : %s\n", str);
   return str;
 }
 
