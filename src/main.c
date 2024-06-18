@@ -102,8 +102,12 @@ int main() {
         ipen = val_between(1, game.n_peng_per_player, "Pingouin numero ") - 1;
         pen = game.player_tab[current_player].penguins + ipen;
         dir = val_between(1, 6, "Direction de deplacement");
-        dist = scan_int("Distance de deplacement");
+        dist = scan_int("Distance de deplacement (debug : 666)");
         first = false;
+        if (dist == 666) {
+          debug_game_infos(&game);
+          map_debug(&(game.map));
+        }
       } while (!can_move_penguin_to(&(game.map), pen, dir, dist));
 
       // printf("dist=%d, ", dist);
