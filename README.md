@@ -1,3 +1,6 @@
+1. execute the Makefile
+2. execute main file
+
 Image parser :
 print an bmp file to console with print_img(char * path);
 
