@@ -65,86 +65,95 @@ void affichepp(Game *game) {
 }
 
 int main() {
-  // todo list :  function to get player input, main game loop, color code
   srand(time(NULL));
-
+  assert(N_COLS >= 4);
+  assert(N_ROWS >= 3);
   // INITIALISATION
   bool exit = 0;
   Game game;
   game = game_new();
   clear();
-  // system("tput smcup");
   gotoxy(0, 0);
   print_game_start_text();
 
   // MAIN LOOP
-  while (can_player_play(&game, game.n_turn % game.n_player)) {
+  while (can_game_continue(&game)) {
     unsigned current_player = game.n_turn % game.n_player;
-    clear();
-    // DISPLAY GAME
-    print_game_map(&game);
-    print_peng_test(&game);
-    // debug_game_infos(&game);
-    // debug_tile_with_peng(&game.map);
-    // map_debug(&(game.map));
-    //   getchar();
-    //    affichepp(&game);
-    unsigned int dir, dist, ipen; // direction, distance, id penguin
-    Penguin *pen;
 
-    printf("Au tour de \x1B[%dm%s" RESET " :\n", current_player + 41,
-           game.player_tab[current_player].name);
+    if (can_player_play(&game, current_player)) {
 
-    // PLAYER INPUT
-    bool first = true;
-    do {
-      if (!first) {
-        printf(RED "Déplacement impossible\n" RESET);
+      clear();
+      // DISPLAY GAME
+      print_game_map(&game);
+      print_peng_test(&game);
+
+      unsigned int dir, dist, ipen; // direction, distance, id penguin
+      Penguin *pen;
+
+      printf("Au tour de \x1B[%dm%s" RESET " :\n", current_player + 41,
+             game.player_tab[current_player].name);
+
+      // PLAYER INPUT
+      bool first = true;
+      do {
+        if (!first) {
+          printf(RED "Déplacement impossible\n" RESET);
+        }
+        ipen = val_between(1, game.n_peng_per_player, "Pingouin numero ") - 1;
+        pen = game.player_tab[current_player].penguins + ipen;
+        dir = val_between(1, 6, "Direction de deplacement");
+        dist = scan_int("Distance de deplacement");
+        first = false;
+      } while (!can_move_penguin_to(&(game.map), pen, dir, dist));
+
+      // printf("dist=%d, ", dist);
+
+      // CALCULATING RESULTING POSITION
+      unsigned int nx, ny;
+      switch (dir) {
+      case 1:
+        nx = pen->x + dist;
+        ny = pen->y - (dist + pen->x % 2) / 2;
+        break;
+      case 2:
+        nx = pen->x + dist;
+        ny = pen->y + (dist + !(pen->x % 2)) / 2;
+        break;
+      case 3:
+        nx = pen->x;
+        ny = pen->y + dist;
+        break;
+      case 4:
+        nx = pen->x - dist;
+        ny = pen->y + (dist + !(pen->x % 2)) / 2;
+        break;
+      case 5:
+        nx = pen->x - dist;
+        ny = pen->y - (dist + pen->x % 2) / 2;
+        break;
+      case 6:
+        ny = pen->y - dist;
+        nx = pen->x;
+        break;
       }
-      ipen = val_between(1, game.n_peng_per_player, "Pingouin numero ") - 1;
-      pen = game.player_tab[current_player].penguins + ipen;
-      dir = val_between(1, 6, "Direction de deplacement");
-      dist = scan_int("Distance de deplacement");
-      first = false;
-    } while (!can_move_penguin_to(&(game.map), pen, dir, dist));
+      update_game_data(&game, current_player, ipen, nx, ny);
 
-    // printf("dist=%d, ", dist);
+    } else {
+      print_game_map(&game);
+      print_peng_test(&game);
+      gotoxy(0, MAX_MAP_SCREEN_HEIGHT + 5);
 
-    // CALCULATING RESULTING POSITION
-    unsigned int nx, ny;
-    switch (dir) {
-    case 1:
-      nx = pen->x + dist;
-      ny = pen->y - (dist + pen->x % 2) / 2;
-      break;
-    case 2:
-      nx = pen->x + dist;
-      ny = pen->y + (dist + !(pen->x % 2)) / 2;
-      break;
-    case 3:
-      nx = pen->x;
-      ny = pen->y + dist;
-      break;
-    case 4:
-      nx = pen->x - dist;
-      ny = pen->y + (dist + !(pen->x % 2)) / 2;
-      break;
-    case 5:
-      nx = pen->x - dist;
-      ny = pen->y - (dist + pen->x % 2) / 2;
-      break;
-    case 6:
-      ny = pen->y - dist;
-      nx = pen->x;
-      break;
+      printf("Tour de \x1B[%dm%s" RESET " passe, il/elle ne peut plus jouer\n",
+             current_player + 41, game.player_tab[current_player].name);
+      printf("Appuyez sur entree pour continuer");
+      while (getchar() != '\n') {
+      }
     }
-    // printf("x=%u, y=%u, nx=%u, ny=%u\n", pen->x, pen->y, nx, ny);
     game.n_turn++;
-    update_game_data(&game, current_player, ipen, nx, ny);
   }
-  gotoxy(0, 0);
-  clear();
-
+  print_game_map(&game);
+  print_peng_test(&game);
+  gotoxy(0, MAX_MAP_SCREEN_HEIGHT + 5);
   print_game_result(&game);
   return 0;
 }
