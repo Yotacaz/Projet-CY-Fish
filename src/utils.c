@@ -51,7 +51,6 @@ char *scan_str(int max_len, char *msg) {
   char *str = malloc((strlen(buf) + 1) * sizeof(char));
   verify(str != NULL, "erreur d'allocation memoire");
   strcpy(str, buf); // Copy buffer to destination
-  printf("name : %s\n", str);
   return str;
 }
 
