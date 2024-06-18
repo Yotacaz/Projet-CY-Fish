@@ -43,10 +43,14 @@ void print_fishes(Map map) {
 
       if (map.tiles[y][x].n_fishes == 0) {
         printf("❌");
-      } else {
-        for (int i = 0; i < map.tiles[y][x].n_fishes; i++) {
-          switch (map.tiles[y][x].fish_values[i]) {
 
+      } else {
+
+        int points = 0;
+        for (int i = 0; i < map.tiles[y][x].n_fishes; i++) {
+          points += map.tiles[y][x].fish_values[i];
+
+          switch (map.tiles[y][x].fish_values[i]) {
           case 1:
             printf("🐟");
             break;
@@ -60,6 +64,8 @@ void print_fishes(Map map) {
             assert(0);
           }
         }
+        gotoxy(screen_x + 4, screen_y + 1);
+        printf(CYN "%d" RESET, points);
       } // end of else
     }
   }

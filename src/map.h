@@ -1,4 +1,3 @@
-
 #ifndef _MAP_H
 #define _MAP_H
 
@@ -6,7 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define N_ROWS 9
+#define N_ROWS 5
 #define N_COLS 9
 #define MAX_FISHES 3
 

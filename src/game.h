@@ -49,4 +49,6 @@ void finish_starter_map(Game *game);
 
 bool can_player_play(Game *game, unsigned int play_turn);
 
+bool can_game_continue(Game *game);
+
 #endif

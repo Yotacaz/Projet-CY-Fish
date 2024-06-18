@@ -47,30 +47,25 @@ void print_game_infos(Game *game) {
 
 void print_game_result(Game *game) {
   assert(game_is_valid(game));
-  clear();
-  int *rank = malloc(sizeof(int) * game->n_player);
-  verify(rank != NULL, "erreur d'allocation memoire");
 
-  // giving players a rank
+  int i_max = 0;
+  Player tmp;
   for (int i = 0; i < game->n_player; i++) {
-    rank[i] = i;
-  }
-  for (int j = 0, best_player = 0; j < game->n_player; j++) {
-    for (int i = j; i < game->n_player; i++) {
-      if (game->player_tab[rank[i]].score >
-          game->player_tab[best_player].score) {
-        best_player = i;
+    i_max = i;
+    for (int j = i; j < game->n_player; j++) {
+      if (game->player_tab[i_max].score < game->player_tab[j].score) {
+        i_max = j;
       }
     }
-    rank[j] = best_player;
-    rank[best_player] = j;
+    tmp = game->player_tab[i_max];
+    game->player_tab[i_max] = game->player_tab[i];
+    game->player_tab[i] = tmp;
   }
   printf(CYN "Fin de la partie en %d tours!\n", game->n_turn);
-  printf("Meilleur joueur : " BOLD_CYN "%s" CYN,
-         game->player_tab[rank[0]].name);
+  printf("Meilleur joueur : " BOLD_CYN "%s\n" CYN, game->player_tab[0].name);
   for (int i = 0; i < game->n_player; i++) {
-    printf(BOLD_CYN "#%d " CYN ": %s (%d poissons)", i + 1,
-           game->player_tab[rank[i]].name, game->player_tab[rank[i]].score);
+    printf(BOLD_CYN "#%d " CYN ": %s (%d poissons)\n", i + 1,
+           game->player_tab[i].name, game->player_tab[i].score);
   }
 }
 
@@ -82,7 +77,6 @@ void print_game_map(Game *game) {
       print_tile(x, y);
     }
   }
-  // affichepp(&game);
   gotoxy(0, 0);
   print_game_infos(game);
 }
@@ -121,6 +115,9 @@ void print_peng_test(Game *game) { // print_peng_test(&game);
     for (int j = 0; j < game->n_peng_per_player; j++) {
       screen_x = (game->player_tab[i].penguins[j].x) * (TILE_WIDTH - 2);
       screen_y = (game->player_tab[i].penguins[j].y) * (TILE_HEIGHT - 1);
+      if (game->player_tab[i].penguins[j].x % 2 == 0) {
+        screen_y += 2;
+      }
       gotoxy(screen_x + 2, screen_y + 3);
       printf("🐧");
       // set bg to a color associated with the player
@@ -255,7 +252,7 @@ void finish_starter_map(Game *game) {
     }
   }
   unsigned int nb_penguins = game->n_player * game->n_peng_per_player;
-  int nx, ny;
+  int nx = 0, ny = 0;
   // make sure that at the beggining of the game, the map has enough case with
   // one fish of value 1
   while (nb_penguins > nb_1_fish) // dis is veri efectiv
@@ -370,6 +367,16 @@ bool can_player_play(Game *game, unsigned int play_turn) {
   for (unsigned int i = 0; i < game->n_peng_per_player; i++) {
     if (can_move_penguin(&game->map,
                          game->player_tab[play_turn].penguins + i)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool can_game_continue(Game *game) {
+  assert(game_is_valid(game));
+  for (int i = 0; i < game->n_player; i++) {
+    if (can_player_play(game, i)) {
       return true;
     }
   }
